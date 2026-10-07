@@ -61,7 +61,7 @@ void MainWindow::makeWidgetsLayout()
             // shift by 1 extra slot after every 3 cells
             int layoutRow = row + row / 3;
             int layoutCol = col + col / 3;
-            gridLayout->addWidget(cellButtons[row][col], layoutRow, layoutCol);
+            gridLayout->addWidget(cellButtons[row][col], layoutRow, layoutCol, Qt::AlignCenter);
         }
     }
     gridLayout->setRowMinimumHeight(3, 6);
@@ -77,6 +77,7 @@ void MainWindow::makeWidgetsLayout()
     mainLayout->addLayout(gridLayout);
     mainLayout->addLayout(numberLayout);
     mainLayout->addWidget(checkButton);
+    mainLayout->setAlignment(gridLayout, Qt::AlignHCenter);
 
     this->setLayout(mainLayout);
 }
