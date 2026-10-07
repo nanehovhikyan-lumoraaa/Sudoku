@@ -8,6 +8,7 @@ class QGridLayout;
 class QVBoxLayout;
 class QHBoxLayout;
 class QTimer;
+class QLabel;
 
 class MainWindow: public QWidget
 {
@@ -18,6 +19,7 @@ class MainWindow: public QWidget
         void createWidgets();
         void makeWidgetsLayout();
         void makeConnections();
+        void loadNewGame();
     private slots:
         void handleCellClicked(int row, int col);
         void handleNumberClicked(int number);
@@ -29,7 +31,7 @@ class MainWindow: public QWidget
         QHBoxLayout *numberLayout;
 
         QPushButton *cellButtons[9][9];
-        QPushButton *numButtons[10];
+        QPushButton *numButtons[9];
         QPushButton *checkButton;
 
         int playerBoard[9][9];
@@ -40,6 +42,7 @@ class MainWindow: public QWidget
 
         QTimer *gameTimer;
         int secondsPassed;
+        QLabel* timerLabel;
 };
 
 #endif
