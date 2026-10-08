@@ -20,20 +20,28 @@ class MainWindow: public QWidget
         void makeWidgetsLayout();
         void makeConnections();
         void loadNewGame();
+        void loadPuzzleIntoBoard(int puzzle[9][9], int solution[9][9]);
     private slots:
         void handleCellClicked(int row, int col);
         void handleNumberClicked(int number);
         void handleCheckButtonClicked();
+        void handleUndoButtonClicked();
         void updateTimer();
     private:
         QVBoxLayout *mainLayout;
         QGridLayout *gridLayout;
+        QHBoxLayout *bottomLayout;
         QHBoxLayout *numberLayout;
 
         QPushButton *cellButtons[9][9];
         QPushButton *numButtons[9];
         QPushButton *checkButton;
+        QPushButton *undoButton;
+        QPushButton *newGameButton;
 
+        int puzzleBank[3][9][9];
+        int solutionBank[3][9][9];
+        int currentPuzzleIndex;
         int playerBoard[9][9];
         int solutionBoard[9][9];
 
