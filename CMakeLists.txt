@@ -7,10 +7,13 @@ set(CMAKE_AUTOMOC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
-qt_add_executable(first
+qt_add_executable(Sudoku
     sudoku.cpp
     sudoku.h
     main.cpp
+    puzzles.h
 )
 
-target_link_libraries(first PRIVATE Qt6::Widgets)
+file(COPY resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+target_link_libraries(Sudoku PRIVATE Qt6::Widgets)

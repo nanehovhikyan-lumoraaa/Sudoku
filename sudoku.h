@@ -9,6 +9,7 @@ class QVBoxLayout;
 class QHBoxLayout;
 class QTimer;
 class QLabel;
+class QSoundEffect;
 
 class MainWindow: public QWidget
 {
@@ -19,13 +20,13 @@ class MainWindow: public QWidget
         void createWidgets();
         void makeWidgetsLayout();
         void makeConnections();
-        void loadNewGame();
+        void loadNewGame(bool flag);
         void loadPuzzleIntoBoard(const int puzzle[9][9], const int solution[9][9]);
     private slots:
         void handleCellClicked(int row, int col);
         void handleNumberClicked(int number);
         void handleCheckButtonClicked();
-        void handleUndoButtonClicked();
+        void handleDeleteButtonClicked();
         void updateTimer();
     private:
         QVBoxLayout *mainLayout;
@@ -36,7 +37,7 @@ class MainWindow: public QWidget
         QPushButton *cellButtons[9][9];
         QPushButton *numButtons[9];
         QPushButton *checkButton;
-        QPushButton *undoButton;
+        QPushButton *deleteButton;
         QPushButton *newGameButton;
 
         int puzzleBank[3][9][9];

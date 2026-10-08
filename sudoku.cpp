@@ -12,10 +12,11 @@
 
 MainWindow::MainWindow(QWidget* parent) : QWidget(parent)
 {
+    setWindowTitle("Sudoku");
     createWidgets();
     makeWidgetsLayout();
     makeConnections();
-    loadNewGame();
+    loadNewGame(false);
 }
 
 
@@ -50,15 +51,26 @@ void MainWindow::createWidgets()
     for (int i = 0; i < 9; ++i) {
         numButtons[i] = new QPushButton(QString::number(i+1), this);
         numButtons[i]->setFixedSize(40, 40);
-        numButtons[i]->setStyleSheet("background-color: #C2F7A6; color: #000E59");
+        numButtons[i]->setStyleSheet("background-color: #D4E0D2; color: #2C3531; font-weight: bold;");
     }
-    undoButton = new QPushButton("Undo", this);
+    deleteButton = new QPushButton("Delete", this);
+    deleteButton->setStyleSheet("background-color: #E2D9CE; color: #3E3A36; font-weight: bold;");
     newGameButton = new QPushButton("New Game", this);
+    newGameButton->setStyleSheet("background-color: #E2D9CE; color: #3E3A36; font-weight: bold;");
 
     timerLabel = new QLabel("Time: 00:00", this);
+    timerLabel->setStyleSheet(
+        "background-color: #737E91;"
+        "color: #2C3531;"
+        "font-weight: bold;"
+        "font-size: 14px;"
+        "border-radius: 4px;"
+        "padding: 6px;"
+    );
     timerLabel->setAlignment(Qt::AlignCenter);
 
     checkButton = new QPushButton("Check Solution", this);
+    checkButton->setStyleSheet("background-color: #E2D9CE; color: #3E3A36; font-weight: bold;");
     gameTimer = new QTimer(this);
 }
 
@@ -70,7 +82,6 @@ void MainWindow::makeWidgetsLayout()
     {
         for (int col = 0; col < 9; col++)
         {
-            // shift by 1 extra slot after every 3 cells
             int layoutRow = row + row / 3;
             int layoutCol = col + col / 3;
             gridLayout->addWidget(cellButtons[row][col], layoutRow, layoutCol, Qt::AlignCenter);
@@ -86,7 +97,7 @@ void MainWindow::makeWidgetsLayout()
         numberLayout->addWidget(numButtons[i]);
     }
 
-    bottomLayout->addWidget(undoButton);
+    bottomLayout->addWidget(deleteButton);
     bottomLayout->addWidget(newGameButton);
     bottomLayout->addWidget(checkButton);
     mainLayout->addWidget(timerLabel);
@@ -95,6 +106,7 @@ void MainWindow::makeWidgetsLayout()
     mainLayout->addLayout(bottomLayout);
     mainLayout->setAlignment(gridLayout, Qt::AlignHCenter);
 
+    this->setStyleSheet("background-color: #F5F2EB");
     this->setLayout(mainLayout);
 }
 
@@ -119,13 +131,12 @@ void MainWindow::makeConnections()
     }
 
     connect(newGameButton, &QPushButton::clicked, this, [this](){
-        currentPuzzleIndex = (currentPuzzleIndex + 1) % PUZZLE_COUNT; // Cycles 0 -> 1 -> 2 -> 0
-        loadNewGame();
+        loadNewGame(true);
         secondsPassed = 0;
     });
 
     connect(checkButton, &QPushButton::clicked, this, &MainWindow::handleCheckButtonClicked);
-    connect(undoButton, &QPushButton::clicked, this, &MainWindow::handleUndoButtonClicked);
+    connect(deleteButton, &QPushButton::clicked, this, &MainWindow::handleDeleteButtonClicked);
     connect(gameTimer, &QTimer::timeout, this, &MainWindow::updateTimer);
     gameTimer->start(1000);
 }
@@ -135,18 +146,18 @@ void MainWindow::handleCellClicked(int row, int col)
 {
     if (selectedRow == row && selectedCol == col)
     {
-        cellButtons[selectedRow][selectedCol]->setStyleSheet("background-color: #F7DDA6");
+        cellButtons[selectedRow][selectedCol]->setStyleSheet("background-color: #EBE1D1; color: #2D4A3E; font-weight: bold;");
         selectedRow = -1;
         selectedCol = -1;
         return;
     }
     if (selectedCol != -1 && selectedRow != -1)
     {
-        cellButtons[selectedRow][selectedCol]->setStyleSheet("background-color: #F7DDA6; color: #5C0F00;");
+        cellButtons[selectedRow][selectedCol]->setStyleSheet("background-color: #EBE1D1; color: #2D4A3E; font-weight: bold;");
     }
     selectedRow = row;
     selectedCol = col;
-    cellButtons[selectedRow][selectedCol]->setStyleSheet("background-color: #BF867C;");
+    cellButtons[selectedRow][selectedCol]->setStyleSheet("background-color: #C7D6C1; color: #2D4A3E; font-weight: bold;");
 }
 
 
@@ -157,7 +168,7 @@ void MainWindow::handleNumberClicked(int number)
         return;
     }
     cellButtons[selectedRow][selectedCol]->setText(QString::number(number));
-    cellButtons[selectedRow][selectedCol]->setStyleSheet("background-color: #BF867C; color: #5C0F00; font-weight: bold;");
+    cellButtons[selectedRow][selectedCol]->setStyleSheet("background-color: #C7D6C1; color: #2D4A3E; font-weight: bold;");
     playerBoard[selectedRow][selectedCol] = number;
     numButtons[number-1]->clearFocus();
 } 
@@ -181,17 +192,57 @@ void MainWindow::handleCheckButtonClicked()
             }
         }
     }
+
+    QString msgBoxStyle = 
+        "QMessageBox { background-color: #F5F2EB; color: #2C3531; }"
+        "QLabel { color: #2C3531; font-weight: bold; }"
+        "QPushButton { background-color: #E8E3D9; color: #3E3A36; border-radius: 4px; padding: 6px 14px; font-weight: bold; }";
+    
     if (!isComplete)
     {
-        QMessageBox::warning(this, "Incomplete", "The board is not fully filled yet. Keep going!");
+        QMessageBox msgBox(this);
+        msgBox.setWindowTitle("Incomplete");
+        msgBox.setText("The board is not fully filled yet. Keep going!");
+        // msgBox.setIcon(QMessageBox::Warning);
+        QPixmap customIcon("resources/thinking.jpg");
+        msgBox.setIconPixmap(customIcon.scaled(200, 200, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        msgBox.setStyleSheet(msgBoxStyle);
+        msgBox.exec();
     }
     else if (isCorrect)
     {
-        QMessageBox::information(this, "Victory!", "Congratulations! You solved this Sudoku pazzle correctly!");
+        QMessageBox msgBox(this);
+        msgBox.setWindowTitle("Victory!");
+        msgBox.setText("Congratulations! You solved this Sudoku puzzle correctly!\n\n" + timerLabel->text());
+        // msgBox.setIcon(QMessageBox::Information);
+        QPixmap customIcon("resources/happy.jpg");
+        msgBox.setIconPixmap(customIcon.scaled(200, 200, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        msgBox.setStyleSheet(msgBoxStyle);
+        QPushButton *okButton = msgBox.addButton(QMessageBox::Ok);
+        QPushButton *customNewGameButton = msgBox.addButton("New Game", QMessageBox::ActionRole);
+        QPushButton *costumRetryButton = msgBox.addButton(QMessageBox::Retry);
+        msgBox.exec();          // to execute the window (make it appear)
+
+        if (msgBox.clickedButton() == customNewGameButton){
+            loadNewGame(true);
+            secondsPassed = 0;
+        }
+        else if (msgBox.clickedButton() == costumRetryButton){
+            loadNewGame(false);
+            secondsPassed = 0;
+        }
+        else if (msgBox.clickedButton() == okButton){}
     }
     else
     {
-        QMessageBox::warning(this, "Keep Trying", "There are some mistaked in your solution. Check your numbers!");
+        QMessageBox msgBox(this);
+        msgBox.setWindowTitle("Keep Trying");
+        msgBox.setText("There are some mistaked in your solution. Check your numbers!");
+        // msgBox.setIcon(QMessageBox::Warning);
+        QPixmap customIcon("resources/dissapointed.png");
+        msgBox.setIconPixmap(customIcon.scaled(200, 200, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        msgBox.setStyleSheet(msgBoxStyle);
+        msgBox.exec();
     }
 }
 
@@ -206,17 +257,26 @@ void MainWindow::updateTimer()
     timerLabel->setText("Time: " + minStr + ":" + secStr); 
 }
 
-void MainWindow::handleUndoButtonClicked()
+void MainWindow::handleDeleteButtonClicked()
 {
+    if (selectedRow == -1 || selectedCol == -1)
+        return;
     cellButtons[selectedRow][selectedCol]->setText("");
     playerBoard[selectedRow][selectedCol] = 0;
-    cellButtons[selectedRow][selectedCol]->setStyleSheet("background-color: #BF867C;");
+    cellButtons[selectedRow][selectedCol]->setStyleSheet("background-color: #C7D6C1;");
 }
 
 
-void MainWindow::loadNewGame()
+void MainWindow::loadNewGame(bool flag)
 {
-    loadPuzzleIntoBoard(SAMPLE_PUZZLES[currentPuzzleIndex], SAMPLE_SOLUTIONS[currentPuzzleIndex]);
+    if (flag == false)
+    {
+        loadPuzzleIntoBoard(SAMPLE_PUZZLES[currentPuzzleIndex], SAMPLE_SOLUTIONS[currentPuzzleIndex]);
+    }
+    else{
+        currentPuzzleIndex = (currentPuzzleIndex + 1) % PUZZLE_COUNT; // Cycles 0 -> 1 -> 2 -> 0
+        loadPuzzleIntoBoard(SAMPLE_PUZZLES[currentPuzzleIndex], SAMPLE_SOLUTIONS[currentPuzzleIndex]);
+    }
 }
 
 
@@ -232,13 +292,18 @@ void MainWindow::loadPuzzleIntoBoard(const int samplePuzzle[9][9], const int sam
             {
                 cellButtons[row][col]->setText(QString::number(samplePuzzle[row][col]));
                 cellButtons[row][col]->setEnabled(false);
-                cellButtons[row][col]->setStyleSheet("background-color: #d8b4fe; color: white");
+                cellButtons[row][col]->setStyleSheet("background-color: #C8B9A6; color: #3E3A36; font-weight: bold;");
             }
             else{
                 cellButtons[row][col]->setText("");
                 cellButtons[row][col]->setEnabled(true);
-                cellButtons[row][col]->setStyleSheet("background-color: #F7DDA6");
+                cellButtons[row][col]->setStyleSheet("background-color: #EBE1D1; color: #2D4A3E; font-weight: bold;");
             }
         }
     }
 }
+
+
+
+
+// Add custom made buttons to QMessageBoxes, like: New Game, Retry...
