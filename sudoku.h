@@ -20,7 +20,7 @@ class MainWindow: public QWidget
         void makeWidgetsLayout();
         void makeConnections();
         void loadNewGame();
-        void loadPuzzleIntoBoard(int puzzle[9][9], int solution[9][9]);
+        void loadPuzzleIntoBoard(const int puzzle[9][9], const int solution[9][9]);
     private slots:
         void handleCellClicked(int row, int col);
         void handleNumberClicked(int number);
