@@ -43,7 +43,7 @@ const int SAMPLE_PUZZLES[PUZZLE_COUNT][9][9] = {
 };
 
 
-const int SAMPLE_SOLUTIONS[3][9][9] = {
+const int SAMPLE_SOLUTIONS[PUZZLE_COUNT][9][9] = {
     {
         {5, 3, 4, 6, 7, 8, 9, 1, 2},
         {6, 7, 2, 1, 9, 5, 3, 4, 8},
