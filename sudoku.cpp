@@ -119,7 +119,7 @@ void MainWindow::makeConnections()
     }
 
     connect(newGameButton, &QPushButton::clicked, this, [this](){
-        currentPuzzleIndex = (currentPuzzleIndex + 1) % 3; // Cycles 0 -> 1 -> 2 -> 0
+        currentPuzzleIndex = (currentPuzzleIndex + 1) % PUZZLE_COUNT; // Cycles 0 -> 1 -> 2 -> 0
         loadNewGame();
         secondsPassed = 0;
     });

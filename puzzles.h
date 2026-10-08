@@ -3,7 +3,7 @@
 
 const int PUZZLE_COUNT = 3;
 
-const int SAMPLE_PUZZLES[3][9][9] = {
+const int SAMPLE_PUZZLES[PUZZLE_COUNT][9][9] = {
     {
         {5, 3, 0, 0, 7, 0, 0, 0, 0},
         {6, 0, 0, 1, 9, 5, 0, 0, 0},
