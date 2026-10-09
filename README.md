@@ -187,6 +187,7 @@ Make sure the solution is a valid Sudoku and that every given in the puzzle appe
 ## Possible Improvements
 
 - Fix and verify the stored solutions (or add a solver / puzzle generator).
+- Disable a number button once all nine instances of that number have been placed on the board.
 - Highlight conflicting numbers in rows, columns and boxes.
 - Add keyboard support (digits, arrow keys, Backspace).
 - Add difficulty levels and a larger puzzle bank.
