@@ -298,8 +298,3 @@ void MainWindow::loadPuzzleIntoBoard(const int samplePuzzle[9][9], const int sam
         }
     }
 }
-
-
-
-
-// Add custom made buttons to QMessageBoxes, like: New Game, Retry...
