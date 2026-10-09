@@ -22,6 +22,7 @@ class MainWindow: public QWidget
         void makeConnections();
         void loadNewGame(bool flag);
         void loadPuzzleIntoBoard(const int puzzle[9][9], const int solution[9][9]);
+        void showGameMessage(const QString &title, const QString &text, const QString &iconPath);
     private slots:
         void handleCellClicked(int row, int col);
         void handleNumberClicked(int number);

@@ -174,6 +174,41 @@ void MainWindow::handleNumberClicked(int number)
 } 
 
 
+void MainWindow::showGameMessage(const QString &title, const QString &text, const QString &iconPath)
+{
+    gameTimer->stop();
+
+    QString msgBoxStyle = 
+        "QMessageBox { background-color: #F5F2EB; color: #2C3531; }"
+        "QLabel { color: #2C3531; font-weight: bold; }"
+        "QPushButton { background-color: #E8E3D9; color: #3E3A36; border-radius: 4px; padding: 6px 14px; font-weight: bold; }";
+
+    QMessageBox msgBox(this);
+    msgBox.setWindowTitle(title);
+    msgBox.setText(text);
+    // msgBox.setIcon(QMessageBox::Information);
+    QPixmap customIcon(iconPath);
+    msgBox.setIconPixmap(customIcon.scaled(200, 200, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    msgBox.setStyleSheet(msgBoxStyle);
+    QPushButton *okButton = msgBox.addButton(QMessageBox::Ok);
+    QPushButton *customNewGameButton = msgBox.addButton("New Game", QMessageBox::ActionRole);
+    QPushButton *costumRetryButton = msgBox.addButton(QMessageBox::Retry);
+    msgBox.exec();          // to execute the window (make it appear)
+
+    if (msgBox.clickedButton() == customNewGameButton){
+        loadNewGame(true);
+        secondsPassed = 0;
+    }
+    else if (msgBox.clickedButton() == costumRetryButton){
+        loadNewGame(false);
+        secondsPassed = 0;
+    }
+    else if (msgBox.clickedButton() == okButton){}
+
+    gameTimer->start(1000);
+}
+
+
 void MainWindow::handleCheckButtonClicked()
 {
     bool isComplete = true;
@@ -192,57 +227,18 @@ void MainWindow::handleCheckButtonClicked()
             }
         }
     }
-
-    QString msgBoxStyle = 
-        "QMessageBox { background-color: #F5F2EB; color: #2C3531; }"
-        "QLabel { color: #2C3531; font-weight: bold; }"
-        "QPushButton { background-color: #E8E3D9; color: #3E3A36; border-radius: 4px; padding: 6px 14px; font-weight: bold; }";
     
     if (!isComplete)
     {
-        QMessageBox msgBox(this);
-        msgBox.setWindowTitle("Incomplete");
-        msgBox.setText("The board is not fully filled yet. Keep going!");
-        // msgBox.setIcon(QMessageBox::Warning);
-        QPixmap customIcon("resources/thinking.jpg");
-        msgBox.setIconPixmap(customIcon.scaled(200, 200, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-        msgBox.setStyleSheet(msgBoxStyle);
-        msgBox.exec();
+        showGameMessage("Incomplete", "The board is not fully filled yet. Keep going!", "resources/thinking.jpg");
     }
     else if (isCorrect)
     {
-        QMessageBox msgBox(this);
-        msgBox.setWindowTitle("Victory!");
-        msgBox.setText("Congratulations! You solved this Sudoku puzzle correctly!\n\n" + timerLabel->text());
-        // msgBox.setIcon(QMessageBox::Information);
-        QPixmap customIcon("resources/happy.jpg");
-        msgBox.setIconPixmap(customIcon.scaled(200, 200, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-        msgBox.setStyleSheet(msgBoxStyle);
-        QPushButton *okButton = msgBox.addButton(QMessageBox::Ok);
-        QPushButton *customNewGameButton = msgBox.addButton("New Game", QMessageBox::ActionRole);
-        QPushButton *costumRetryButton = msgBox.addButton(QMessageBox::Retry);
-        msgBox.exec();          // to execute the window (make it appear)
-
-        if (msgBox.clickedButton() == customNewGameButton){
-            loadNewGame(true);
-            secondsPassed = 0;
-        }
-        else if (msgBox.clickedButton() == costumRetryButton){
-            loadNewGame(false);
-            secondsPassed = 0;
-        }
-        else if (msgBox.clickedButton() == okButton){}
+        showGameMessage("Victory!", "Congratulations! You solved this Sudoku puzzle correctly!\n\n" + timerLabel->text(), "resources/happy.jpg");
     }
     else
     {
-        QMessageBox msgBox(this);
-        msgBox.setWindowTitle("Keep Trying");
-        msgBox.setText("There are some mistaked in your solution. Check your numbers!");
-        // msgBox.setIcon(QMessageBox::Warning);
-        QPixmap customIcon("resources/dissapointed.png");
-        msgBox.setIconPixmap(customIcon.scaled(200, 200, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-        msgBox.setStyleSheet(msgBoxStyle);
-        msgBox.exec();
+        showGameMessage("Keep Trying", "There are some mistaked in your solution. Check your numbers!", "resources/dissapointed.png");
     }
 }
 
