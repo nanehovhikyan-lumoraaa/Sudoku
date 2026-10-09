@@ -194,7 +194,8 @@ Make sure the solution is a valid Sudoku and that every given in the puzzle appe
 - Add pencil-mark notes, hints and undo/redo.
 - Add sound effects (a `QSoundEffect` forward declaration is already present).
 - Load images via the Qt Resource System (`.qrc`) so they are embedded in the executable.
-- Save the best times.
+- Have scores for each game.
+- Save the best times and scores.
 
 ---
 
